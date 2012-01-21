@@ -12,6 +12,13 @@ module Anmo
       Application.new
     end
 
+    def save_object path, body, status
+      header "anmo_path", path
+      header "anmo_body", body
+      header "anmo_http_status", status
+      put "__CREATE__"
+    end
+
     def test_404s_if_object_does_not_exist
       get "/bla/bla/bla.json"
       assert_equal "Not Found", last_response.body
@@ -19,9 +26,7 @@ module Anmo
     end
 
     def test_stores_mock_data
-      header "anmo_body", "please save this"
-      header "anmo_path", "/this/is/the/path.object"
-      put "__CREATE__"
+      save_object "/this/is/the/path.object", "please save this", nil
 
       get "/this/is/the/path.object"
       assert_equal "please save this", last_response.body
@@ -29,11 +34,25 @@ module Anmo
     end
 
     def test_stores_status_code
-      header "anmo_path", "/monkeys"
-      header "anmo_http_status", 123
-      put "__CREATE__"
+      save_object "/monkeys", nil, 123
       get "/monkeys"
       assert_equal 123, last_response.status
+    end
+
+    def test_allows_deleting_all_objects
+      save_object "/this/is/the/path.object", "please save this", nil
+
+      get "/this/is/the/path.object"
+      first_response = last_response
+
+      put "__DELETE_ALL__"
+
+      get "/this/is/the/path.object"
+      second_response = last_response
+
+      assert_equal "please save this", first_response.body
+      assert_equal "Not Found", second_response.body
+      assert_equal 404, second_response.status
     end
   end
 end

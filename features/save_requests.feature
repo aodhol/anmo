@@ -26,3 +26,17 @@ Feature: Save Requests
     When I issue a put request to "/__CREATE__"
     And I do a get request to "/some/object"
     Then the http status should be 123
+
+  Scenario: Delete all saved objects
+    Given the headers
+    """
+    {
+      "anmo_path": "/some/object",
+      "anmo_body": "some data"
+    }
+    """
+    And I issue a put request to "/__CREATE__"
+    And I issue a put request to "/__DELETE_ALL__"
+    When I do a get request to "/some/object"
+    Then I should see "Not Found"
+    And the http status should be 404

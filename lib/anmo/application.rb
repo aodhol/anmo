@@ -8,6 +8,8 @@ module Anmo
 
       if request.path_info == "/__CREATE__"
         @stored_requests << request
+      elsif request.path_info == "/__DELETE_ALL__"
+        @stored_requests = []
       end
 
       found_request = @stored_requests.find {|r| r.env["HTTP_ANMO_PATH"] == request.path_info}
