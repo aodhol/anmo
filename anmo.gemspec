@@ -19,8 +19,11 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_runtime_dependency "rack"
+  s.add_development_dependency "rake"
   s.add_development_dependency "minitest"
   s.add_development_dependency "rack-test"
   s.add_development_dependency "cucumber"
   s.add_development_dependency "rspec"
+  s.add_development_dependency "guard"
+  s.add_development_dependency "guard-shell"
 end
