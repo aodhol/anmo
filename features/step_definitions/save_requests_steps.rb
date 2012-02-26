@@ -13,6 +13,12 @@ When /^I do a get request to "([^"]*)"$/ do |path|
   get path
 end
 
+When /^I do a get request to "([^"]*)" with the headers$/ do |path, headers|
+  headers = JSON.parse(headers)
+  headers.each { |name, value| header name, value }
+  get path
+end
+
 Then /^I should see "([^"]*)"$/ do |text|
   last_response.body.should == text
 end
