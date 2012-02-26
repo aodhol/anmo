@@ -35,7 +35,7 @@ Feature: API
       "blah": "blah"
     }
     """
-    Then I should see the response body "can't think of anything"
+    Then I see the response body "can't think of anything"
 
   Scenario: Save object
     Given an anmo server
@@ -48,7 +48,7 @@ Feature: API
     })
     """
     And I request the uri "http://localhost:8787/some/object"
-    Then I should see the response body "some data"
+    Then I see the response body "some data"
 
   Scenario: Save object with http status code
     Given an anmo server
@@ -61,7 +61,7 @@ Feature: API
     })
     """
     And I request the uri "http://localhost:8787/some/object"
-    Then I should see the response code 123
+    Then I see the response code 123
 
   Scenario: Request without required headers 404s
     Given an anmo server
@@ -74,7 +74,7 @@ Feature: API
     })
     """
     And I request the uri "http://localhost:8787/some/object"
-    Then I should see the response code 404
+    Then I see the response code 404
 
   Scenario: Request with required headers
     Given an anmo server
@@ -94,8 +94,8 @@ Feature: API
       "durp": "derp"
     }
     """
-    Then I should see the response body "helloow"
-    And I should see the response code 200
+    Then I see the response body "helloow"
+    And I see the response code 200
 
   Scenario: Delete all saved objects
     Given an anmo server
@@ -112,4 +112,4 @@ Feature: API
     Anmo.delete_all
     """
     And I request the uri "http://localhost:8787/some/object"
-    Then I should see the response code 404
+    Then I see the response code 404

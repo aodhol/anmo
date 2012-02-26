@@ -42,10 +42,10 @@ When /^I request the uri "([^"]*)" with the headers$/ do |uri, headers|
   @response = HTTParty.get(uri, :headers => headers)
 end
 
-Then /^I should see the response body "([^"]*)"$/ do |body|
+Then /^I see the response body "([^"]*)"$/ do |body|
   @response.body.should == body
 end
 
-Then /^I should see the response code (\d+)$/ do |code|
+Then /^I see the response code (\d+)$/ do |code|
   @response.code.should == code.to_i
 end
