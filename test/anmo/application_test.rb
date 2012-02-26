@@ -2,6 +2,7 @@ require "minitest/pride"
 require "minitest/autorun"
 require "minitest/unit"
 require "rack/test"
+require "json"
 require File.expand_path(File.join(File.dirname(__FILE__), "../../lib/anmo/application"))
 
 module Anmo
@@ -13,13 +14,13 @@ module Anmo
     end
 
     def save_object path, body, status, required_headers
-      header "anmo_path", path
-      header "anmo_body", body
-      header "anmo_http_status", status
-      if required_headers
-        header "anmo_required_headers", required_headers
-      end
-      put "__CREATE__"
+      options = {
+        :path => path,
+        :body => body,
+        :status => status,
+        :required_headers => required_headers
+      }
+      put "__CREATE__", options.to_json
     end
 
     def test_404s_if_object_does_not_exist
@@ -71,6 +72,13 @@ module Anmo
       get "/oh/hai"
       assert_equal 200, last_response.status
       assert_equal "the content", last_response.body
+    end
+
+    def test_returns_the_last_added_object_first
+      save_object "/oh/hai", "the first content", nil, nil
+      save_object "/oh/hai", "the second content", nil, nil
+      get "/oh/hai"
+      assert_equal "the second content", last_response.body
     end
   end
 end
