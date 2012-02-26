@@ -11,7 +11,6 @@ Feature: API
     """
     Then I see an anmo server on port 8787
 
-  @now
   Scenario: Launch a server with a port
     When I execute the code
     """
