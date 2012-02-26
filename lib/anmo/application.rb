@@ -22,19 +22,19 @@ module Anmo
 
     private
 
-    def find_stored_request actual_request
-      found_request = @stored_requests.find {|r| r.env["HTTP_ANMO_PATH"] == actual_request.path_info}
-      if found_request
-        required_headers = found_request.env["HTTP_ANMO_REQUIRED_HEADERS"] || []
-        required_headers.each do |name, value|
-          if actual_request.env[convert_header_name_to_rack_style_name(name)] != value
-            found_request = nil
-            break
+      def find_stored_request actual_request
+        found_request = @stored_requests.find {|r| r.env["HTTP_ANMO_PATH"] == actual_request.path_info}
+        if found_request
+          required_headers = found_request.env["HTTP_ANMO_REQUIRED_HEADERS"] || []
+          required_headers.each do |name, value|
+            if actual_request.env[convert_header_name_to_rack_style_name(name)] != value
+              found_request = nil
+              break
+            end
           end
         end
+        found_request
       end
-      found_request
-    end
 
       def convert_header_name_to_rack_style_name name
         name = "HTTP_#{name}"
