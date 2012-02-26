@@ -7,20 +7,34 @@ module Anmo
       request = Rack::Request.new(env)
 
       if request.path_info == "/__CREATE__"
-        request_info = JSON.parse(read_request_body(request))
-        @stored_requests.unshift(request_info)
+        process_create_request request
       elsif request.path_info == "/__DELETE_ALL__"
-        @stored_requests = []
-      end
-
-      if found_request = find_stored_request(request)
-        [Integer(found_request["status"]||200), {"Content-Type" => "text/html"}, [found_request["body"]]]
+        process_delete_all_request request
       else
-        [404, {"Content-Type" => "text/html"}, "Not Found"]
+        process_normal_request request
       end
     end
 
     private
+
+      def process_create_request request
+        request_info = JSON.parse(read_request_body(request))
+        @stored_requests.unshift(request_info)
+        [201, {}, ""]
+      end
+
+      def process_delete_all_request request
+        @stored_requests = []
+        [200, {}, ""]
+      end
+
+      def process_normal_request request
+        if found_request = find_stored_request(request)
+          [Integer(found_request["status"]||200), {"Content-Type" => "text/html"}, [found_request["body"]]]
+        else
+          [404, {"Content-Type" => "text/html"}, "Not Found"]
+        end
+      end
 
       def find_stored_request actual_request
         found_request = @stored_requests.find {|r| r["path"] == actual_request.path_info}

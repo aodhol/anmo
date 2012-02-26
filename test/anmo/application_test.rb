@@ -31,6 +31,7 @@ module Anmo
 
     def test_stores_mock_data
       save_object "/this/is/the/path.object", "please save this", nil, nil
+      assert_equal 201, last_response.status
 
       get "/this/is/the/path.object"
       assert_equal "please save this", last_response.body
@@ -50,6 +51,7 @@ module Anmo
       first_response = last_response
 
       put "__DELETE_ALL__"
+      assert_equal 200, last_response.status
 
       get "/this/is/the/path.object"
       second_response = last_response
