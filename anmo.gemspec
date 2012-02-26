@@ -21,4 +21,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "rack"
   s.add_development_dependency "minitest"
   s.add_development_dependency "rack-test"
+  s.add_development_dependency "cucumber"
+  s.add_development_dependency "rspec"
 end
