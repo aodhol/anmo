@@ -44,6 +44,20 @@ module Anmo
       assert last_response.ok?
     end
 
+    def test_does_not_return_object_if_request_has_different_query_parameters
+      save_object "/path/?hello=true", "please save this", nil, nil, nil
+      get "/path/?hello=false"
+      assert_equal 404, last_response.status
+      assert_equal "Not Found", last_response.body
+    end
+
+    def test_returns_object_if_request_has_same_query_parameters
+      save_object "/path/?hello=true&bla=bla", "please save this", nil, nil, nil
+      get "/path/?hello=false&bla=bla"
+      assert_equal 200, last_response.status
+      assert_equal "please save this", last_response.body
+    end
+
     def test_stores_status_code
       save_object "/monkeys", nil, 123, nil, nil
       get "/monkeys"

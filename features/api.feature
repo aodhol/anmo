@@ -50,6 +50,20 @@ Feature: API
     And I request the uri "http://localhost:8787/some/object"
     Then I see the response body "some data"
 
+  Scenario: Request only returns object if it has correct query parameters
+    Given an anmo server
+    When I execute the code
+    """
+    Anmo.server = "http://localhost:8787"
+    Anmo.create_request({
+      :path             => "/some/object?monkeys=12",
+      :body             => "some data"
+    })
+    """
+    When I request the uri "http://localhost:8787/some/object?monkeys=13"
+    Then I see the response code 200
+    And I see the response body "some data"
+
   Scenario: Save object with http status code
     Given an anmo server
     When I execute the code
