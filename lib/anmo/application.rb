@@ -10,9 +10,22 @@ module Anmo
         process_create_request request
       elsif request.path_info == "/__DELETE_ALL__"
         process_delete_all_request request
+      elsif request.path_info == "/__REQUESTS__"
+        process_requests_request request
+      elsif request.path_info == "/__DELETE_ALL_REQUESTS__"
+        process_delete_all_requests_request
       else
+        Application.requests << request.env
         process_normal_request request
       end
+    end
+
+    def self.requests
+      @@requests ||= []
+    end
+
+    def self.delete_all_requests
+      @@requests = nil
     end
 
     private
@@ -34,6 +47,15 @@ module Anmo
         else
           [404, {"Content-Type" => "text/html"}, "Not Found"]
         end
+      end
+
+      def process_requests_request request
+        [200, {"Content-Type" => "application/json"}, JSON.dump(Application.requests)]
+      end
+
+      def process_delete_all_requests_request
+        Application.delete_all_requests
+        [200, {}, ""]
       end
 
       def find_stored_request actual_request

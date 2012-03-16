@@ -24,6 +24,7 @@ Given /^an anmo server$/ do
   Thread.new do
     Anmo.launch_server
   end
+
   timeout 5 do
     response = nil
     while response.nil?
@@ -42,6 +43,7 @@ When /^I issue a put request to the uri "([^"]*)"$/ do |uri|
 end
 
 When /^I request the uri "([^"]*)"$/ do |uri|
+  @requested_uri = uri
   @response = HTTParty.get(uri)
 end
 
@@ -56,4 +58,12 @@ end
 
 Then /^I see the response code (\d+)$/ do |code|
   @response.code.should == code.to_i
+end
+
+Then /^that request should be stored$/ do
+  Anmo.requests.last["PATH_INFO"].should == @requested_uri.gsub("http://localhost:8787", "")
+end
+
+Then /^there should be no stored requests$/ do
+  Anmo.requests.size.should == 0
 end

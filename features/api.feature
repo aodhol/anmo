@@ -129,3 +129,18 @@ Feature: API
     """
     And I request the uri "http://localhost:8787/some/object"
     Then I see the response code 404
+
+  Scenario: Store all requests
+    Given an anmo server
+    When I request the uri "http://localhost:8787/some/object"
+    Then that request should be stored
+
+  Scenario: Delete all requests
+    Given an anmo server
+    When I request the uri "http://localhost:8787/some/object"
+    And I execute the code
+    """
+    Anmo.server = "http://localhost:8787"
+    Anmo.delete_all_requests
+    """
+    Then there should be no stored requests
