@@ -56,11 +56,11 @@ Feature: API
     """
     Anmo.server = "http://localhost:8787"
     Anmo.create_request({
-      :path             => "/some/object?monkeys=12",
+      :path             => "/path?monkeys=12",
       :body             => "some data"
     })
     """
-    When I request the uri "http://localhost:8787/some/object?monkeys=13"
+    When I request the uri "http://localhost:8787/path?monkeys=12"
     Then I see the response code 200
     And I see the response body "some data"
 

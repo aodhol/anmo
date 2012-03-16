@@ -52,8 +52,8 @@ module Anmo
     end
 
     def test_returns_object_if_request_has_same_query_parameters
-      save_object "/path/?hello=true&bla=bla", "please save this", nil, nil, nil
-      get "/path/?hello=false&bla=bla"
+      save_object "/?hello=true&bla=bla", "please save this", nil, nil, nil
+      get "/?hello=true&bla=bla"
       assert_equal 200, last_response.status
       assert_equal "please save this", last_response.body
     end

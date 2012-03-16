@@ -59,7 +59,12 @@ module Anmo
       end
 
       def find_stored_request actual_request
-        found_request = @stored_requests.find {|r| r["path"] == actual_request.path_info}
+        actual_request_url = actual_request.path_info
+        if actual_request.query_string != ""
+          actual_request_url << "?" + actual_request.query_string
+        end
+
+        found_request = @stored_requests.find {|r| r["path"] == actual_request_url}
         if found_request
           if found_request["method"]
             if actual_request.request_method != found_request["method"].upcase
