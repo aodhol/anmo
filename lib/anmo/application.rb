@@ -39,6 +39,12 @@ module Anmo
       def find_stored_request actual_request
         found_request = @stored_requests.find {|r| r["path"] == actual_request.path_info}
         if found_request
+          if found_request["method"]
+            if actual_request.request_method != found_request["method"].upcase
+              return
+            end
+          end
+
           required_headers = found_request["required_headers"] || []
           required_headers.each do |name, value|
             if actual_request.env[convert_header_name_to_rack_style_name(name)] != value

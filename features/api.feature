@@ -63,6 +63,22 @@ Feature: API
     And I request the uri "http://localhost:8787/some/object"
     Then I see the response code 123
 
+  Scenario: Save object with specific method
+    Given an anmo server
+    When I execute the code
+    """
+    Anmo.server = "http://localhost:8787"
+    Anmo.create_request({
+      :path             => "/some/object",
+      :body             => "some data",
+      :method           => :put
+    })
+    """
+    And I issue a put request to the uri "http://localhost:8787/some/object"
+    Then I see the response body "some data"
+    And I issue a get request to the uri "http://localhost:8787/some/object"
+    Then I see the response code 404
+
   Scenario: Request without required headers 404s
     Given an anmo server
     When I execute the code

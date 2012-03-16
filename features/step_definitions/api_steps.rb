@@ -33,6 +33,14 @@ Given /^an anmo server$/ do
   end
 end
 
+Then /^I issue a get request to the uri "([^"]*)"$/ do |uri|
+  @response = HTTParty.get(uri)
+end
+
+When /^I issue a put request to the uri "([^"]*)"$/ do |uri|
+  @response = HTTParty.put(uri)
+end
+
 When /^I request the uri "([^"]*)"$/ do |uri|
   @response = HTTParty.get(uri)
 end
