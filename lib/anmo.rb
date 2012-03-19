@@ -1,6 +1,8 @@
 require "anmo/version"
 require "anmo/application"
 require "thin"
+require "httparty"
+require "json"
 
 module Anmo
   class << self
