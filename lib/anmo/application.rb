@@ -1,5 +1,3 @@
-require "ostruct"
-
 module Anmo
   class Application
     def call env
