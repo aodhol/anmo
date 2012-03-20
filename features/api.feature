@@ -158,3 +158,22 @@ Feature: API
     Anmo.delete_all_requests
     """
     Then there should be no stored requests
+
+  Scenario: List all saved objects
+    Given an anmo server
+    When I execute the code
+    """
+    Anmo.server = "http://localhost:8787"
+    Anmo.create_request({
+      :path             => "/some/object",
+      :body             => "some data"
+    })
+
+    @result = Anmo.stored_objects
+    """
+    Then I should see the value
+    """
+    [
+      {"path" => "/some/object", "body" => "some data"}
+    ]
+    """

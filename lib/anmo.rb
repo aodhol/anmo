@@ -29,4 +29,9 @@ module Anmo
   def self.delete_all_requests
     HTTParty.get("#{server}/__DELETE_ALL_REQUESTS__")
   end
+
+  def self.stored_objects
+    json = HTTParty.get("#{server}/__STORED_OBJECTS__")
+    JSON.parse(json.body)
+  end
 end

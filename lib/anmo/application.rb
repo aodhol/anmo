@@ -3,7 +3,7 @@ require "ostruct"
 module Anmo
   class Application
     def call env
-      @stored_requests ||= []
+      @stored_objects ||= []
       request = Rack::Request.new(env)
 
       if request.path_info == "/__CREATE__"
@@ -14,6 +14,8 @@ module Anmo
         process_requests_request request
       elsif request.path_info == "/__DELETE_ALL_REQUESTS__"
         process_delete_all_requests_request
+      elsif request.path_info == "/__STORED_OBJECTS__"
+        process_stored_objects_request
       else
         Application.requests << request.env
         process_normal_request request
@@ -32,12 +34,12 @@ module Anmo
 
       def process_create_request request
         request_info = JSON.parse(read_request_body(request))
-        @stored_requests.unshift(request_info)
+        @stored_objects.unshift(request_info)
         [201, {}, ""]
       end
 
       def process_delete_all_request request
-        @stored_requests = []
+        @stored_objects = []
         [200, {}, ""]
       end
 
@@ -58,13 +60,17 @@ module Anmo
         [200, {}, ""]
       end
 
+      def process_stored_objects_request
+        [200, {"Content-Type" => "application/json"}, [@stored_objects.to_json]]
+      end
+
       def find_stored_request actual_request
         actual_request_url = actual_request.path_info
         if actual_request.query_string != ""
           actual_request_url << "?" + actual_request.query_string
         end
 
-        found_request = @stored_requests.find {|r| r["path"] == actual_request_url}
+        found_request = @stored_objects.find {|r| r["path"] == actual_request_url}
         if found_request
           if found_request["method"]
             if actual_request.request_method != found_request["method"].upcase

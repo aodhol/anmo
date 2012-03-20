@@ -1,3 +1,5 @@
+require "stringio"
+
 When /^I execute the following code in a new thread$/ do |code|
   Thread.new do
     eval code
@@ -66,4 +68,8 @@ end
 
 Then /^there should be no stored requests$/ do
   Anmo.requests.size.should == 0
+end
+
+Then /^I should see the value$/ do |code|
+  @result.should == eval(code)
 end
