@@ -9,21 +9,17 @@ module Anmo
       if request.path_info == "/__CREATE__"
         create request
       elsif request.path_info == "/__DELETE_ALL__"
-        process_delete_all_request request
+        delete_all_objects
       elsif request.path_info == "/__REQUESTS__"
-        requests request
+        requests
       elsif request.path_info == "/__DELETE_ALL_REQUESTS__"
-        delete
+        delete_all_requests
       elsif request.path_info == "/__STORED_OBJECTS__"
         stored_objects
       else
         @@stored_requests << request.env
         process_normal_request request
       end
-    end
-
-    def self.delete_all_requests
-      @@stored_requests = []
     end
 
     private
@@ -34,7 +30,7 @@ module Anmo
         [201, {}, ""]
       end
 
-      def process_delete_all_request request
+      def delete_all_objects
         @stored_objects = []
         [200, {}, ""]
       end
@@ -47,12 +43,12 @@ module Anmo
         end
       end
 
-      def requests request
+      def requests
         [200, {"Content-Type" => "application/json"}, (@@stored_requests || []).to_json]
       end
 
-      def delete
-        Application.delete_all_requests
+      def delete_all_requests
+        @@stored_requests = []
         [200, {}, ""]
       end
 

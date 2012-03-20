@@ -14,7 +14,7 @@ module Anmo
     end
 
     def setup
-      Anmo::Application.delete_all_requests
+      get "__DELETE_ALL_REQUESTS__"
     end
 
     def save_object path, body, status, required_headers, method
