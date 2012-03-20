@@ -7,7 +7,7 @@ module Anmo
       request = Rack::Request.new(env)
 
       if request.path_info == "/__CREATE__"
-        process_create_request request
+        create request
       elsif request.path_info == "/__DELETE_ALL__"
         process_delete_all_request request
       elsif request.path_info == "/__REQUESTS__"
@@ -28,7 +28,7 @@ module Anmo
 
     private
 
-      def process_create_request request
+      def create request
         request_info = JSON.parse(read_request_body(request))
         @stored_objects.unshift(request_info)
         [201, {}, ""]
