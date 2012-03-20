@@ -25,7 +25,6 @@ module Anmo
       elsif request.path_info == "/__STORED_OBJECTS__"
         stored_objects
       else
-        ApplicationDataStore.stored_requests << request.env
         process_normal_request request
       end
     end
@@ -44,6 +43,8 @@ module Anmo
       end
 
       def process_normal_request request
+        ApplicationDataStore.stored_requests << request.env
+
         if found_request = find_stored_request(request)
           [Integer(found_request["status"]||200), {"Content-Type" => "text/html"}, [found_request["body"]]]
         else
