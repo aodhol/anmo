@@ -14,7 +14,7 @@ module Anmo
   end
 
   def self.create_request options
-    HTTParty.put("#{server}/__CREATE__", :body => options.to_json)
+    HTTParty.post("#{server}/__CREATE__", {:body => options.to_json, :headers => {"Content-Type" => "application/json"}})
   end
 
   def self.delete_all
