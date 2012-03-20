@@ -35,24 +35,24 @@ module Anmo
       def create request
         request_info = JSON.parse(read_request_body(request))
         ApplicationDataStore.stored_objects.unshift(request_info)
-        [201, {}, ""]
+        [201, {}, [""]]
       end
 
       def delete_all_objects
         ApplicationDataStore.stored_objects = []
-        [200, {}, ""]
+        [200, {}, [""]]
       end
 
       def process_normal_request request
         if found_request = find_stored_request(request)
           [Integer(found_request["status"]||200), {"Content-Type" => "text/html"}, [found_request["body"]]]
         else
-          [404, {"Content-Type" => "text/html"}, "Not Found"]
+          [404, {"Content-Type" => "text/html"}, ["Not Found"]]
         end
       end
 
       def requests
-        [200, {"Content-Type" => "application/json"}, (ApplicationDataStore.stored_requests || []).to_json]
+        [200, {"Content-Type" => "application/json"}, [(ApplicationDataStore.stored_requests || []).to_json]]
       end
 
       def delete_all_requests
