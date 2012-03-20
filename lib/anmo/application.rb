@@ -2,6 +2,8 @@ module Anmo
   class Application
     def call env
       @stored_objects ||= []
+      @@stored_requests ||= []
+
       request = Rack::Request.new(env)
 
       if request.path_info == "/__CREATE__"
@@ -9,23 +11,19 @@ module Anmo
       elsif request.path_info == "/__DELETE_ALL__"
         process_delete_all_request request
       elsif request.path_info == "/__REQUESTS__"
-        process_requests_request request
+        requests request
       elsif request.path_info == "/__DELETE_ALL_REQUESTS__"
         process_delete_all_requests_request
       elsif request.path_info == "/__STORED_OBJECTS__"
         process_stored_objects_request
       else
-        Application.requests << request.env
+        @@stored_requests << request.env
         process_normal_request request
       end
     end
 
-    def self.requests
-      @@requests ||= []
-    end
-
     def self.delete_all_requests
-      @@requests = nil
+      @@stored_requests = []
     end
 
     private
@@ -49,8 +47,8 @@ module Anmo
         end
       end
 
-      def process_requests_request request
-        [200, {"Content-Type" => "application/json"}, JSON.dump(Application.requests)]
+      def requests request
+        [200, {"Content-Type" => "application/json"}, (@@stored_requests || []).to_json]
       end
 
       def process_delete_all_requests_request

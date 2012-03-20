@@ -118,15 +118,20 @@ module Anmo
     def test_stores_all_requests
       get "/hello"
       get "/hai"
-      assert_equal 2, Anmo::Application.requests.size
-      assert_equal "/hello", Anmo::Application.requests.first["PATH_INFO"]
-      assert_equal "/hai", Anmo::Application.requests.last["PATH_INFO"]
+      get "/__REQUESTS__"
+      json = JSON.parse(last_response.body)
+
+      assert_equal 2, json.size
+      assert_equal "/hello", json.first["PATH_INFO"]
+      assert_equal "/hai", json.last["PATH_INFO"]
     end
 
     def test_does_not_store_create_or_delete_requests
       save_object "/oh/hai", "the first content", nil, nil, nil
       put "__DELETE_ALL__"
-      assert_equal 0, Anmo::Application::requests.size
+      get "/__REQUESTS__"
+      json = JSON.parse(last_response.body)
+      assert_equal 0, json.size
     end
 
     def test_returns_requests_as_json
@@ -139,9 +144,13 @@ module Anmo
 
     def test_deletes_all_requests
       get "/hello"
-      assert_equal 1, Anmo::Application::requests.size
+      get "/__REQUESTS__"
+      json = JSON.parse(last_response.body)
+      assert_equal 1, json.size
       get "/__DELETE_ALL_REQUESTS__"
-      assert_equal 0, Anmo::Application::requests.size
+      get "/__REQUESTS__"
+      json = JSON.parse(last_response.body)
+      assert_equal 0, json.size
     end
 
     def test_returns_empty_list_of_stored_objects
