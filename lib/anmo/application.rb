@@ -1,9 +1,17 @@
 module Anmo
-  class Application
-    def call env
-      @stored_objects ||= []
-      @@stored_requests ||= []
+  class ApplicationDataStore
+    class << self
+      attr_accessor :stored_objects, :stored_requests
+    end
+  end
 
+  class Application
+    def initialize
+      ApplicationDataStore.stored_objects = []
+      ApplicationDataStore.stored_requests = []
+    end
+
+    def call env
       request = Rack::Request.new(env)
 
       if request.path_info == "/__CREATE__"
@@ -17,7 +25,7 @@ module Anmo
       elsif request.path_info == "/__STORED_OBJECTS__"
         stored_objects
       else
-        @@stored_requests << request.env
+        ApplicationDataStore.stored_requests << request.env
         process_normal_request request
       end
     end
@@ -26,12 +34,12 @@ module Anmo
 
       def create request
         request_info = JSON.parse(read_request_body(request))
-        @stored_objects.unshift(request_info)
+        ApplicationDataStore.stored_objects.unshift(request_info)
         [201, {}, ""]
       end
 
       def delete_all_objects
-        @stored_objects = []
+        ApplicationDataStore.stored_objects = []
         [200, {}, ""]
       end
 
@@ -44,16 +52,16 @@ module Anmo
       end
 
       def requests
-        [200, {"Content-Type" => "application/json"}, (@@stored_requests || []).to_json]
+        [200, {"Content-Type" => "application/json"}, (ApplicationDataStore.stored_requests || []).to_json]
       end
 
       def delete_all_requests
-        @@stored_requests = []
+        ApplicationDataStore.stored_requests = []
         [200, {}, ""]
       end
 
       def stored_objects
-        [200, {"Content-Type" => "application/json"}, [@stored_objects.to_json]]
+        [200, {"Content-Type" => "application/json"}, [ApplicationDataStore.stored_objects.to_json]]
       end
 
       def find_stored_request actual_request
@@ -62,7 +70,7 @@ module Anmo
           actual_request_url << "?" + actual_request.query_string
         end
 
-        found_request = @stored_objects.find {|r| r["path"] == actual_request_url}
+        found_request = ApplicationDataStore.stored_objects.find {|r| r["path"] == actual_request_url}
         if found_request
           if found_request["method"]
             if actual_request.request_method != found_request["method"].upcase
