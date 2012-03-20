@@ -34,12 +34,12 @@ module Anmo
       def create request
         request_info = JSON.parse(read_request_body(request))
         ApplicationDataStore.stored_objects.unshift(request_info)
-        [201, {}, [""]]
+        [201, {"Content-Type" => "text/html"}, [""]]
       end
 
       def delete_all_objects
         ApplicationDataStore.stored_objects = []
-        [200, {}, [""]]
+        [200, {"Content-Type" => "text/html"}, [""]]
       end
 
       def process_normal_request request
@@ -58,7 +58,7 @@ module Anmo
 
       def delete_all_requests
         ApplicationDataStore.stored_requests = []
-        [200, {}, ""]
+        [200, {"Content-Type" => "text/html"}, ""]
       end
 
       def stored_objects
