@@ -15,7 +15,7 @@ module Anmo
       elsif request.path_info == "/__DELETE_ALL_REQUESTS__"
         delete
       elsif request.path_info == "/__STORED_OBJECTS__"
-        process_stored_objects_request
+        stored_objects
       else
         @@stored_requests << request.env
         process_normal_request request
@@ -56,7 +56,7 @@ module Anmo
         [200, {}, ""]
       end
 
-      def process_stored_objects_request
+      def stored_objects
         [200, {"Content-Type" => "application/json"}, [@stored_objects.to_json]]
       end
 
