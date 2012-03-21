@@ -170,5 +170,11 @@ module Anmo
       assert_equal 1, json.size
       assert_equal "/some/path", json.first["path"]
     end
+
+    def test_shows_that_its_alive
+      get "/__ALIVE__"
+      assert last_response.ok?
+      assert_equal "<h1>anmo is alive</h1>", last_response.body
+    end
   end
 end

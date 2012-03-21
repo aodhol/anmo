@@ -73,3 +73,11 @@ end
 Then /^I should see the value$/ do |code|
   @result.should == eval(code)
 end
+
+Then /^I see that the anmo server is not running$/ do
+  @result.should == false
+end
+
+Then /^I see that the anmo server is running$/ do
+  @result.should == true
+end

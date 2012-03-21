@@ -15,6 +15,7 @@ module Anmo
       request = Rack::Request.new(env)
 
       controller_methods = [
+        :alive,
         :create_object,
         :delete_all_objects,
         :requests,
@@ -28,6 +29,10 @@ module Anmo
     end
 
     private
+
+      def alive request
+        [200, {"Content-Type" => "text/html"}, ["<h1>anmo is alive</h1>"]]
+      end
 
       def create_object request
         request_info = JSON.parse(read_request_body(request))

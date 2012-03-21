@@ -177,3 +177,20 @@ Feature: API
       {"path" => "/some/object", "body" => "some data"}
     ]
     """
+
+  Scenario: Anmo knows if a server is not running
+    When I execute the code
+    """
+    Anmo.server = "http://localhost:8459"
+    @result = Anmo.running?
+    """
+    Then I see that the anmo server is not running
+
+  Scenario: Anmo knows if a server is running
+    Given an anmo server
+    When I execute the code
+    """
+    Anmo.server = "http://localhost:8787"
+    @result = Anmo.running?
+    """
+    Then I see that the anmo server is running

@@ -34,4 +34,8 @@ module Anmo
     json = HTTParty.get("#{server}/__OBJECTS__")
     JSON.parse(json.body)
   end
+
+  def self.running?
+    HTTParty.get("#{server}/__ALIVE__").code == 200 rescue false
+  end
 end
