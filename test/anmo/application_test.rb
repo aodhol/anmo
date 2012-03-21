@@ -27,7 +27,7 @@ module Anmo
       }
       options[:method] = method if method
 
-      put "__CREATE__", options.to_json
+      put "__CREATE_OBJECT__", options.to_json
     end
 
     def test_404s_if_object_does_not_exist
@@ -71,7 +71,7 @@ module Anmo
       get "/this/is/the/path.object"
       first_response = last_response
 
-      put "__DELETE_ALL__"
+      put "__DELETE_ALL_OBJECTS__"
       assert_equal 200, last_response.status
 
       get "/this/is/the/path.object"
@@ -129,7 +129,7 @@ module Anmo
 
     def test_does_not_store_create_or_delete_requests
       save_object "/oh/hai", "the first content", nil, nil, nil
-      put "__DELETE_ALL__"
+      put "__DELETE_ALL_OBJECTS__"
       get "/__REQUESTS__"
       json = JSON.parse(last_response.body)
       assert_equal 0, json.size
@@ -155,7 +155,7 @@ module Anmo
     end
 
     def test_returns_empty_list_of_stored_objects
-      get "/__STORED_OBJECTS__"
+      get "/__OBJECTS__"
       json = JSON.parse(last_response.body)
       assert_equal "application/json", last_response.content_type
       assert_equal 0, json.size
@@ -163,14 +163,12 @@ module Anmo
 
     def test_lists_stored_objects
       save_object "/some/path", nil, nil, nil, nil
-      save_object "/some/other/path", nil, nil, nil, nil
 
-      get "/__STORED_OBJECTS__"
+      get "/__OBJECTS__"
 
       json = JSON.parse(last_response.body)
-      assert_equal 2, json.size
+      assert_equal 1, json.size
       assert_equal "/some/path", json.first["path"]
-      assert_equal "/some/other/path", json.last["path"]
     end
   end
 end

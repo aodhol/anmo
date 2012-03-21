@@ -14,11 +14,11 @@ module Anmo
   end
 
   def self.create_request options
-    HTTParty.post("#{server}/__CREATE__", {:body => options.to_json, :headers => {"Content-Type" => "application/json"}})
+    HTTParty.post("#{server}/__CREATE_OBJECT__", {:body => options.to_json, :headers => {"Content-Type" => "application/json"}})
   end
 
   def self.delete_all
-    HTTParty.put("#{server}/__DELETE_ALL__")
+    HTTParty.put("#{server}/__DELETE_ALL_OBJECTS__")
   end
 
   def self.requests
@@ -31,7 +31,7 @@ module Anmo
   end
 
   def self.stored_objects
-    json = HTTParty.get("#{server}/__STORED_OBJECTS__")
+    json = HTTParty.get("#{server}/__OBJECTS__")
     JSON.parse(json.body)
   end
 end

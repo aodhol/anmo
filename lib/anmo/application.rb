@@ -14,19 +14,17 @@ module Anmo
     def call env
       request = Rack::Request.new(env)
 
-      if request.path_info == "/__CREATE__"
-        create_object request
-      elsif request.path_info == "/__DELETE_ALL__"
-        delete_all_objects
-      elsif request.path_info == "/__REQUESTS__"
-        requests
-      elsif request.path_info == "/__DELETE_ALL_REQUESTS__"
-        delete_all_requests
-      elsif request.path_info == "/__STORED_OBJECTS__"
-        stored_objects
-      else
-        process_normal_request request
-      end
+      controller_methods = [
+        :create_object,
+        :delete_all_objects,
+        :requests,
+        :delete_all_requests,
+        :objects
+      ]
+
+      method = controller_methods.find {|m| request.path_info =~ /\/?__#{m.upcase}__\/?/}
+      method ||= :process_normal_request
+      send(method, request)
     end
 
     private
@@ -37,7 +35,7 @@ module Anmo
         [201, {"Content-Type" => "text/html"}, [""]]
       end
 
-      def delete_all_objects
+      def delete_all_objects request
         ApplicationDataStore.stored_objects = []
         [200, {"Content-Type" => "text/html"}, [""]]
       end
@@ -52,16 +50,16 @@ module Anmo
         end
       end
 
-      def requests
+      def requests request
         [200, {"Content-Type" => "application/json"}, [(ApplicationDataStore.stored_requests || []).to_json]]
       end
 
-      def delete_all_requests
+      def delete_all_requests request
         ApplicationDataStore.stored_requests = []
         [200, {"Content-Type" => "text/html"}, ""]
       end
 
-      def stored_objects
+      def objects request
         [200, {"Content-Type" => "application/json"}, [ApplicationDataStore.stored_objects.to_json]]
       end
 
