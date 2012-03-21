@@ -14,8 +14,8 @@ module Anmo
     end
 
     def setup
-      get "/__DELETE_ALL"
-      get "/__DELETE_ALL_REQUESTS__"
+      ApplicationDataStore.stored_objects = []
+      ApplicationDataStore.stored_requests = []
     end
 
     def save_object path, body, status, required_headers, method
@@ -156,17 +156,21 @@ module Anmo
 
     def test_returns_empty_list_of_stored_objects
       get "/__STORED_OBJECTS__"
-      assert_equal "application/json", last_response.content_type
       json = JSON.parse(last_response.body)
+      assert_equal "application/json", last_response.content_type
       assert_equal 0, json.size
     end
 
     def test_lists_stored_objects
       save_object "/some/path", nil, nil, nil, nil
+      save_object "/some/other/path", nil, nil, nil, nil
+
       get "/__STORED_OBJECTS__"
+
       json = JSON.parse(last_response.body)
-      assert_equal 1, json.size
+      assert_equal 2, json.size
       assert_equal "/some/path", json.first["path"]
+      assert_equal "/some/other/path", json.last["path"]
     end
   end
 end
