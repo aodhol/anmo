@@ -7,8 +7,8 @@ module Anmo
 
   class Application
     def initialize
-      ApplicationDataStore.stored_objects = []
-      ApplicationDataStore.stored_requests = []
+      ApplicationDataStore.stored_objects ||= []
+      ApplicationDataStore.stored_requests ||= []
     end
 
     def call env
