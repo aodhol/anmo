@@ -5,11 +5,16 @@ require "httparty"
 require "json"
 
 module Anmo
-  class << self
-    attr_accessor :server
+  def self.server
+    @server ||= "http://localhost:#{@port}"
+  end
+
+  def self.server= server
+    @server = server
   end
 
   def self.launch_server port = 8787
+    @port = port
     Thin::Server.start("0.0.0.0", port, Anmo::Application.new)
   end
 
