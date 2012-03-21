@@ -194,3 +194,19 @@ Feature: API
     @result = Anmo.running?
     """
     Then I see that the anmo server is running
+
+  Scenario: Anmo requests are different depending on the host
+    Given an anmo server
+    And I request the path "/hello1" on the host "http://example1.org"
+    And I request the path "/hello2" on the host "http://example2.org"
+    And I request the path "/hello3" on the host "http://example3.org"
+    When I list requests on the host "http://example2.org"
+    Then I should see the request with the path "/hello2"
+
+  Scenario: Anmo objects are different depending on the host
+    Given an anmo server
+    And I save an object to the host "http://example.org"
+    And I save an object to the host "http://another.org"
+    And I save an object to the host "http://sample.org"
+    When I request the object from the host "http://another.org"
+    Then I see the object saved to the host "http://another.org"
