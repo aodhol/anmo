@@ -36,7 +36,7 @@ module Anmo
         :objects
       ]
 
-      method = controller_methods.find {|m| request.path_info =~ /\/?__#{m.upcase}__\/?/}
+      method = controller_methods.find {|m| request.path_info =~ /\/?__#{m.to_s.upcase}__\/?/}
       method ||= :process_normal_request
       send(method, request)
     end
