@@ -33,7 +33,8 @@ module Anmo
         :delete_all_objects,
         :requests,
         :delete_all_requests,
-        :objects
+        :objects,
+        :version
       ]
 
       method = controller_methods.find {|m| request.path_info =~ /\/?__#{m.to_s.upcase}__\/?/}
@@ -53,6 +54,10 @@ module Anmo
 
       def alive request
         [200, {"Content-Type" => "text/html"}, ["<h1>anmo is alive</h1>"]]
+      end
+
+      def version request
+        [200, {"Content-Type" => "text/html"}, [Anmo::VERSION]]
       end
 
       def create_object request

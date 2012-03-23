@@ -210,3 +210,11 @@ Feature: API
     And I save an object to the host "http://sample.org"
     When I request the object from the host "http://another.org"
     Then I see the object saved to the host "http://another.org"
+
+  Scenario: Anmo knows what version the server is running
+    Given an anmo server
+    When I execute the code
+    """
+    Anmo.server_version
+    """
+    Then I see the anmo version

@@ -7,7 +7,7 @@ When /^I execute the following code in a new thread$/ do |code|
 end
 
 When /^I execute the code$/ do |code|
-  eval code
+  @result = eval code
 end
 
 Then /^I see an anmo server on port (\d+)$/ do |port|
@@ -110,4 +110,8 @@ end
 Then /^I should see the request with the path "([^"]*)"$/ do |path|
   @requests.size.should == 1
   @requests.first["PATH_INFO"].should == path
+end
+
+Then /^I see the anmo version$/ do
+  @result.should == Anmo::VERSION
 end

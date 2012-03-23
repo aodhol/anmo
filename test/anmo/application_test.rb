@@ -206,6 +206,11 @@ module Anmo
       assert_equal "body2", last_response.body
     end
 
+    def test_exposes_server_version
+      get "/__VERSION__"
+      assert_equal Anmo::VERSION, last_response.body
+    end
+
     private
 
       def with_host(host)

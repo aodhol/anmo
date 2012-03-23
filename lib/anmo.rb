@@ -13,6 +13,10 @@ module Anmo
     @server = server
   end
 
+  def self.server_version
+    HTTParty.get("#{server}/__VERSION__").body
+  end
+
   def self.launch_server port = 8787
     @port = port
     Thin::Server.start("0.0.0.0", port, Anmo::Application.new)
