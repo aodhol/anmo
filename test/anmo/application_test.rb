@@ -15,7 +15,7 @@ module Anmo
 
     def setup
       ApplicationDataStore.reset_requests!
-      ApplicationDataStore.reset_stored_objects!
+      ApplicationDataStore.reset_objects!
     end
 
     def save_object path, body, status, required_headers, method

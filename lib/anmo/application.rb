@@ -1,24 +1,18 @@
 module Anmo
   class ApplicationDataStore
     class << self
-      def reset_requests!
-        @stored_requests = {}
-      end
+      [:requests, :objects].each do |t|
+        define_method :"reset_#{t}!" do
+          instance_variable_set(:"@stored_#{t}", {})
+        end
 
-      def reset_stored_objects!
-        @stored_objects = {}
-      end
-
-      def stored_requests host
-        @stored_requests ||= {}
-        @stored_requests[host] ||= []
-        @stored_requests[host]
-      end
-
-      def stored_objects host
-        @stored_objects ||= {}
-        @stored_objects[host] ||= []
-        @stored_objects[host]
+        define_method :"stored_#{t}" do |host|
+          name = :"@stored_#{t}"
+          instance_variable_set(name, {}) unless instance_variable_get(name)
+          values = instance_variable_get(name)
+          values[host] ||= []
+          values[host]
+        end
       end
     end
   end
@@ -75,7 +69,7 @@ module Anmo
       end
 
       def delete_all_objects request
-        ApplicationDataStore.reset_stored_objects!
+        ApplicationDataStore.reset_objects!
         text ""
       end
 
