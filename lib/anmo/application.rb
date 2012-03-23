@@ -29,12 +29,12 @@ module Anmo
 
       controller_methods = [
         :alive,
+        :version,
         :create_object,
-        :delete_all_objects,
-        :requests,
-        :delete_all_requests,
         :objects,
-        :version
+        :requests,
+        :delete_all_objects,
+        :delete_all_requests
       ]
 
       method = controller_methods.find {|m| request.path_info =~ /\/?__#{m.to_s.upcase}__\/?/}
@@ -43,6 +43,14 @@ module Anmo
     end
 
     private
+
+      def text text, status = 200
+        [status, {"Content-Type" => "text/html"}, [text]]
+      end
+
+      def json json, status = 200
+        [status, {"Content-Type" => "application/json"}, [json]]
+      end
 
       def stored_requests request
         ApplicationDataStore.stored_requests(request.host)
@@ -53,45 +61,45 @@ module Anmo
       end
 
       def alive request
-        [200, {"Content-Type" => "text/html"}, ["<h1>anmo is alive</h1>"]]
+        text "<h1>anmo is alive</h1>"
       end
 
       def version request
-        [200, {"Content-Type" => "text/html"}, [Anmo::VERSION]]
+        text Anmo::VERSION
       end
 
       def create_object request
         request_info = JSON.parse(read_request_body(request))
         stored_objects(request).unshift(request_info)
-        [201, {"Content-Type" => "text/html"}, [""]]
+        text "", 201
       end
 
       def delete_all_objects request
         ApplicationDataStore.reset_stored_objects!
-        [200, {"Content-Type" => "text/html"}, [""]]
+        text ""
       end
 
       def process_normal_request request
         stored_requests(request) << request.env
 
         if found_request = find_stored_request(request)
-          [Integer(found_request["status"]||200), {"Content-Type" => "text/html"}, [found_request["body"]]]
+          text found_request["body"], Integer(found_request["status"]||200)
         else
-          [404, {"Content-Type" => "text/html"}, ["Not Found"]]
+          text "Not Found", 404
         end
       end
 
       def requests request
-        [200, {"Content-Type" => "application/json"}, [stored_requests(request).to_json]]
+        json stored_requests(request).to_json
       end
 
       def delete_all_requests request
         ApplicationDataStore.reset_requests!
-        [200, {"Content-Type" => "text/html"}, ""]
+        text ""
       end
 
       def objects request
-        [200, {"Content-Type" => "application/json"}, [stored_objects(request).to_json]]
+        json stored_objects(request).to_json
       end
 
       def find_stored_request actual_request
