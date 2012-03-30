@@ -1,6 +1,8 @@
 Anmo
 ====
 
+[![Build status](https://secure.travis-ci.org/AndrewVos/anmo.png)](https://secure.travis-ci.org/AndrewVos/anmo)
+
 What?
 -----
 Anmo acts as a mock api and can be used to store arbitrary pieces of data for integration testing flaky APIs.
