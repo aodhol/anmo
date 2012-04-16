@@ -14,8 +14,8 @@ module Anmo
     end
 
     def setup
-      ApplicationDataStore.reset_requests!
-      ApplicationDataStore.reset_objects!
+      ApplicationDataStore.stored_objects = []
+      ApplicationDataStore.stored_requests = []
     end
 
     def save_object path, body, status, required_headers, method
@@ -177,48 +177,9 @@ module Anmo
       assert_equal "<h1>anmo is alive</h1>", last_response.body
     end
 
-    def test_returns_different_requests_depending_on_http_host
-      1.upto(3) do |number|
-        with_host "example#{number}.org" do
-          get "/lulz#{number}"
-        end
-      end
-
-      with_host "example2.org" do
-        get "/__REQUESTS__"
-      end
-
-      json = JSON.parse(last_response.body)
-      assert_equal 1, json.size
-      assert_equal "/lulz2", json.first["PATH_INFO"]
-    end
-
-    def test_returns_different_objects_depending_on_http_host
-      1.upto(3) do |number|
-        with_host "host#{number}.org" do
-          save_object "/path", "body#{number}", nil, nil, nil
-        end
-      end
-
-      with_host "host2.org" do
-        get "/path"
-      end
-      assert_equal "body2", last_response.body
-    end
-
     def test_exposes_server_version
       get "/__VERSION__"
       assert_equal Anmo::VERSION, last_response.body
     end
-
-    private
-
-      def with_host(host)
-        previous_host = Rack::Test::DEFAULT_HOST.dup
-        Rack::Test::DEFAULT_HOST.replace host
-        yield
-      ensure
-        Rack::Test::DEFAULT_HOST.replace previous_host
-      end
   end
 end

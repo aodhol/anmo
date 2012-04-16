@@ -82,36 +82,6 @@ Then /^I see that the anmo server is running$/ do
   @result.should == true
 end
 
-Given /^I save an object to the host "([^"]*)"$/ do |host|
-  HTTParty.post("http://localhost:8787/__CREATE_OBJECT__", {
-    :body    => {:path => "/lulz", :body => host}.to_json,
-    :headers => {"Host" => host}
-  })
-end
-
-When /^I request the object from the host "([^"]*)"$/ do |host|
-  @response = HTTParty.get("http://localhost:8787/lulz", :headers => {"Host" => host})
-end
-
-Then /^I see the object saved to the host "([^"]*)"$/ do |host|
-  @response.body.should == host
-end
-
-
-Given /^I request the path "([^"]*)" on the host "([^"]*)"$/ do |path, host|
-  @response = HTTParty.get("http://localhost:8787#{path}", :headers => {"Host" => host})
-end
-
-When /^I list requests on the host "([^"]*)"$/ do |host|
-  json = HTTParty.get("http://localhost:8787/__REQUESTS__", :headers => {"Host" => host}).body
-  @requests = JSON.parse(json)
-end
-
-Then /^I should see the request with the path "([^"]*)"$/ do |path|
-  @requests.size.should == 1
-  @requests.first["PATH_INFO"].should == path
-end
-
 Then /^I see the anmo version$/ do
   @result.should == Anmo::VERSION
 end
