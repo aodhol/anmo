@@ -27,7 +27,7 @@ module Anmo
   end
 
   def self.delete_all
-    HTTParty.put("#{server}/__DELETE_ALL_OBJECTS__")
+    HTTParty.post("#{server}/__DELETE_ALL_OBJECTS__")
   end
 
   def self.requests
@@ -36,7 +36,7 @@ module Anmo
   end
 
   def self.delete_all_requests
-    HTTParty.get("#{server}/__DELETE_ALL_REQUESTS__")
+    HTTParty.post("#{server}/__DELETE_ALL_REQUESTS__")
   end
 
   def self.stored_objects

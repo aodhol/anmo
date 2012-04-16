@@ -71,7 +71,7 @@ module Anmo
       get "/this/is/the/path.object"
       first_response = last_response
 
-      put "__DELETE_ALL_OBJECTS__"
+      post "__DELETE_ALL_OBJECTS__"
       assert_equal 200, last_response.status
 
       get "/this/is/the/path.object"
@@ -129,7 +129,7 @@ module Anmo
 
     def test_does_not_store_create_or_delete_requests
       save_object "/oh/hai", "the first content", nil, nil, nil
-      put "__DELETE_ALL_OBJECTS__"
+      post "__DELETE_ALL_OBJECTS__"
       get "/__REQUESTS__"
       json = JSON.parse(last_response.body)
       assert_equal 0, json.size
@@ -148,7 +148,7 @@ module Anmo
       get "/__REQUESTS__"
       json = JSON.parse(last_response.body)
       assert_equal 1, json.size
-      get "/__DELETE_ALL_REQUESTS__"
+      post "/__DELETE_ALL_REQUESTS__"
       get "/__REQUESTS__"
       json = JSON.parse(last_response.body)
       assert_equal 0, json.size
