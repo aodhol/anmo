@@ -59,6 +59,13 @@ module Anmo
       assert_equal "please save this", last_response.body
     end
 
+    def test_returns_object_if_request_has_query_parameters_in_different_order
+      save_object "/?aaa=aaa&bbb=bbb", "please save this", nil, nil, nil
+      get "/?bbb=bbb&aaa=aaa"
+      assert_equal 200, last_response.status
+      assert_equal "please save this", last_response.body
+    end
+
     def test_stores_status_code
       save_object "/monkeys", nil, 123, nil, nil
       get "/monkeys"

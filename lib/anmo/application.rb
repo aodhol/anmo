@@ -82,28 +82,39 @@ module Anmo
       end
 
       def find_stored_request actual_request
-        actual_request_url = actual_request.path_info
-        if actual_request.query_string != ""
-          actual_request_url << "?" + actual_request.query_string
+        actual_request_query = Rack::Utils.parse_query(actual_request.query_string)
+
+        suspected_request = ApplicationDataStore.stored_objects.find do |r|
+          r["path"].gsub(/\?.*/, "") == actual_request.path_info
         end
 
-        found_request = ApplicationDataStore.stored_objects.find {|r| r["path"] == actual_request_url}
-        if found_request
-          if found_request["method"]
-            if actual_request.request_method != found_request["method"].upcase
-              return
-            end
-          end
+        if suspected_request
+          return unless request_has_same_method actual_request, suspected_request
+          return unless request_has_same_query actual_request, suspected_request
+          return unless request_has_required_headers actual_request, suspected_request
+        end
+        suspected_request
+      end
 
-          required_headers = found_request["required_headers"] || []
-          required_headers.each do |name, value|
-            if actual_request.env[convert_header_name_to_rack_style_name(name)] != value
-              found_request = nil
-              break
-            end
+      def request_has_same_method initial_request, suspected_request
+        return true if suspected_request["method"] == nil
+        suspected_request["method"].upcase == initial_request.request_method
+      end
+
+      def request_has_same_query initial_request, suspected_request
+        return true if suspected_request["path"].include?("?") == false
+        query = Rack::Utils.parse_query(suspected_request["path"].gsub(/.*\?/, ""))
+        query == Rack::Utils.parse_query(initial_request.query_string)
+      end
+
+      def request_has_required_headers initial_request, suspected_request
+        required_headers = suspected_request["required_headers"] || []
+        required_headers.each do |name, value|
+          if initial_request.env[convert_header_name_to_rack_style_name(name)] != value
+            return false
           end
         end
-        found_request
+        true
       end
 
       def convert_header_name_to_rack_style_name name
