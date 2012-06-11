@@ -14,7 +14,7 @@ module Anmo
   end
 
   def self.server_version
-    HTTParty.get("#{server}/__VERSION__").body
+    HTTParty.get(anmo_url("__VERSION__")).body
   end
 
   def self.launch_server port = 8787
@@ -23,28 +23,35 @@ module Anmo
   end
 
   def self.create_request options
-    HTTParty.post("#{server}/__CREATE_OBJECT__", {:body => options.to_json, :headers => {"Content-Type" => "application/json"}})
+    HTTParty.post(anmo_url("__CREATE_OBJECT__"), {:body => options.to_json, :headers => {"Content-Type" => "application/json"}})
   end
 
   def self.delete_all
-    HTTParty.post("#{server}/__DELETE_ALL_OBJECTS__")
+    HTTParty.post(anmo_url("__DELETE_ALL_OBJECTS__"))
   end
 
   def self.requests
-    json = HTTParty.get("#{server}/__REQUESTS__")
+    json = HTTParty.get(anmo_url("__REQUESTS__"))
     JSON.parse(json.body)
   end
 
   def self.delete_all_requests
-    HTTParty.post("#{server}/__DELETE_ALL_REQUESTS__")
+    HTTParty.post(anmo_url("__DELETE_ALL_REQUESTS__"))
   end
 
   def self.stored_objects
-    json = HTTParty.get("#{server}/__OBJECTS__")
+    json = HTTParty.get(anmo_url("__OBJECTS__"))
     JSON.parse(json.body)
   end
 
   def self.running?
-    HTTParty.get("#{server}/__ALIVE__").code == 200 rescue false
+    HTTParty.get(anmo_url("__ALIVE__")).code == 200 rescue false
+  end
+
+  private
+
+  def self.anmo_url path
+    "#{server}/#{path}"
+    # URI.join(server, path).to_s
   end
 end
