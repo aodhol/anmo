@@ -2,6 +2,7 @@ require "dalli"
 
 module Anmo
   class ApplicationDataStore
+    TTL = 1000000
     def self.objects
       cached_objects = server.get("objects")
       return JSON.load(cached_objects) if cached_objects
@@ -17,13 +18,13 @@ module Anmo
     def self.insert_object object
       all_objects = objects
       all_objects.unshift(object)
-      server.set("objects", JSON.dump(all_objects))
+      server.set("objects", JSON.dump(all_objects), TTL)
     end
 
     def self.save_request request
       all_requests = requests
       all_requests << request
-      server.set("requests", JSON.dump(all_requests))
+      server.set("requests", JSON.dump(all_requests), TTL)
     end
 
     def self.clear_objects
