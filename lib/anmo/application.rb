@@ -1,14 +1,49 @@
+require "dalli"
+
 module Anmo
   class ApplicationDataStore
-    class << self
-      attr_accessor :stored_objects, :stored_requests
+    def self.objects
+      cached_objects = server.get("objects")
+      return JSON.load(cached_objects) if cached_objects
+      []
     end
+
+    def self.requests
+      cached_requests = server.get("requests")
+      return JSON.load(cached_requests) if cached_requests
+      []
+    end
+
+    def self.insert_object object
+      all_objects = objects
+      all_objects.unshift(object)
+      server.set("objects", JSON.dump(all_objects))
+    end
+
+    def self.save_request request
+      all_requests = requests
+      all_requests << request
+      server.set("requests", JSON.dump(all_requests))
+    end
+
+    def self.clear_objects
+      server.delete("objects")
+    end
+
+    def self.clear_requests
+      server.delete("requests")
+    end
+
+    private
+      def self.server
+        @server ||= Dalli::Client.new "localhost:11211"
+      end
   end
 
   class Application
     def initialize
-      ApplicationDataStore.stored_objects ||= []
-      ApplicationDataStore.stored_requests ||= []
+      ApplicationDataStore.clear_objects
+      ApplicationDataStore.clear_requests
     end
 
     def call env
@@ -49,17 +84,17 @@ module Anmo
 
       def create_object request
         request_info = JSON.parse(read_request_body(request))
-        ApplicationDataStore.stored_objects.unshift(request_info)
+        ApplicationDataStore.insert_object(request_info)
         text "", 201
       end
 
       def delete_all_objects request
-        ApplicationDataStore.stored_objects = []
+        ApplicationDataStore.clear_objects
         text ""
       end
 
       def process_normal_request request
-        ApplicationDataStore.stored_requests << request.env
+        ApplicationDataStore.save_request(request.env)
 
         if found_request = find_stored_request(request)
           text found_request["body"], Integer(found_request["status"]||200)
@@ -69,22 +104,22 @@ module Anmo
       end
 
       def requests request
-        json ApplicationDataStore.stored_requests.to_json
+        json ApplicationDataStore.requests.to_json
       end
 
       def delete_all_requests request
-        ApplicationDataStore.stored_requests = []
+        ApplicationDataStore.clear_requests
         text ""
       end
 
       def objects request
-        json ApplicationDataStore.stored_objects.to_json
+        json ApplicationDataStore.objects.to_json
       end
 
       def find_stored_request actual_request
         actual_request_query = Rack::Utils.parse_query(actual_request.query_string)
 
-        suspected_request = ApplicationDataStore.stored_objects.find do |r|
+        suspected_request = ApplicationDataStore.objects.find do |r|
           r["path"].gsub(/\?.*/, "") == actual_request.path_info
         end
 

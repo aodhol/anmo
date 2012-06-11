@@ -14,8 +14,8 @@ module Anmo
     end
 
     def setup
-      ApplicationDataStore.stored_objects = []
-      ApplicationDataStore.stored_requests = []
+      ApplicationDataStore.clear_objects
+      ApplicationDataStore.clear_requests
     end
 
     def save_object path, body, status, required_headers, method
