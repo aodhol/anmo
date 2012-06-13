@@ -37,7 +37,7 @@ module Anmo
 
     private
       def self.server
-        @server ||= Dalli::Client.new "localhost:11211"
+        @server ||= Dalli::Client.new "localhost:11211", {:namespace => Process.pid.to_s}
       end
   end
 
