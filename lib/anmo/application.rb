@@ -3,6 +3,13 @@ require "dalli"
 module Anmo
   class ApplicationDataStore
     TTL = 1000000
+    
+    # To view stored memcached objects 
+    # 
+    #   telnet localhost 11211
+    #     get <pid>:objects
+    #
+    # Where <pid> is the value returned by Process.pid.to_s
     def self.objects
       cached_objects = server.get("objects")
       return JSON.load(cached_objects) if cached_objects
@@ -119,17 +126,23 @@ module Anmo
 
       def find_stored_request actual_request
         actual_request_query = Rack::Utils.parse_query(actual_request.query_string)
-
-        suspected_request = ApplicationDataStore.objects.find do |r|
-          r["path"].gsub(/\?.*/, "") == actual_request.path_info
+        
+        suspected_requests = ApplicationDataStore.objects.select do |r|
+          Regexp.new(actual_request.path_info) =~ r["path"]
         end
 
-        if suspected_request
-          return unless request_has_same_method actual_request, suspected_request
-          return unless request_has_same_query actual_request, suspected_request
-          return unless request_has_required_headers actual_request, suspected_request
+        suspected_requests.each do |suspected_request|
+          return suspected_request if requests_match?(actual_request, suspected_request)
         end
-        suspected_request
+        
+        return nil     
+      end
+      
+      def requests_match?(actual_request, suspected_request)
+        return false unless request_has_same_method actual_request, suspected_request
+        return false unless request_has_same_query actual_request, suspected_request
+        return false unless request_has_required_headers actual_request, suspected_request
+        return true
       end
 
       def request_has_same_method initial_request, suspected_request

@@ -123,6 +123,15 @@ module Anmo
       get "/oh/hai"
       assert_equal "the second content", last_response.body
     end
+    
+    def test_uses_query_string_as_part_of_key
+      save_object "/oh/hai?key=value", "the first content", nil, nil, nil
+      save_object "/oh/hai?key=anothervalue", "the second content", nil, nil, nil
+      get "/oh/hai?key=value"
+      assert_equal "the first content", last_response.body
+      get "/oh/hai?key=anothervalue"
+      assert_equal "the second content", last_response.body
+    end
 
     def test_stores_all_requests
       get "/hello"
@@ -188,15 +197,6 @@ module Anmo
     def test_exposes_server_version
       get "/__VERSION__"
       assert_equal Anmo::VERSION, last_response.body
-    end
-
-    def test_uses_query_string_as_part_of_key
-      save_object "/oh/hai?key=value", "the first content", nil, nil, nil
-      save_object "/oh/hai?key=anothervalue", "the second content", nil, nil, nil
-      get "/oh/hai?key=value"
-      assert_equal "the first content", last_response.body
-      get "/oh/hai?key=anothervalue"
-      assert_equal "the second content", last_response.body
     end
 
   end
