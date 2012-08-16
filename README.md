@@ -26,3 +26,11 @@ Anmo.create_request({
 curl http://localhost:8787/lookatmyhorse
 my horse is amazing
 ```
+
+Requires memcached
+------------------
+
+If you get 'Dalli::RingError: No server available' when running test, it could
+be because you don't have a local instance of memcached running. See:
+
+  http://memcached.org/

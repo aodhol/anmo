@@ -1,5 +1,5 @@
-require "anmo/version"
-require "anmo/application"
+require_relative "anmo/version"
+require_relative "anmo/application"
 require "thin"
 require "httparty"
 require "json"
